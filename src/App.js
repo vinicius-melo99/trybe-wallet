@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-function App() {
-  return <div>Hello, TrybeWallet!</div>;
+class App extends Component {
+  render() {
+    return (
+      <div />
+    );
+  }
 }
 
 export default App;
