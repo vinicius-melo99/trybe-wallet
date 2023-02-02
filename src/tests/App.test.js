@@ -7,6 +7,9 @@ import initialState from './helpers/initialState';
 
 const EMAIL_INPUT = 'email-input';
 const PASS_INPUT = 'password-input';
+const VALUE_INPUT = 'value-input';
+const DESCRIPTION_INPUT = 'description-input';
+const TOTAL_FIELD = 'total-field';
 
 describe('Testes do componente Login', () => {
   it('teste se o componente login é renderizado corretamente com os elementos de input', () => {
@@ -51,7 +54,7 @@ describe('testes da página da carteira', () => {
     renderWithRouterAndRedux(<App />, { initialEntries, initialState });
     const title = screen.queryByRole('heading', { level: 2, name: /trybe wallet/i });
     const email = screen.queryByTestId('email-field');
-    const total = screen.queryByTestId('total-field');
+    const total = screen.queryByTestId(TOTAL_FIELD);
 
     expect(title).toBeInTheDocument();
     expect(email).toBeInTheDocument();
@@ -65,8 +68,8 @@ describe('testes da página da carteira', () => {
     const initialEntries = ['/carteira'];
 
     renderWithRouterAndRedux(<App />, { initialEntries, initialState });
-    const valueInput = screen.queryByTestId('value-input');
-    const descriptionInput = screen.queryByTestId('description-input');
+    const valueInput = screen.queryByTestId(VALUE_INPUT);
+    const descriptionInput = screen.queryByTestId(DESCRIPTION_INPUT);
     const currencyInput = screen.queryByTestId('currency-input');
     const methodInput = screen.queryByTestId('method-input');
     const tagInput = screen.queryByTestId('tag-input');
@@ -83,10 +86,10 @@ describe('testes da página da carteira', () => {
   it('teste se ao clicar no botão "Adicionar despesa, uma requisição à API é feita e o valor no header é atualziado"', () => {
     const initialEntries = ['/carteira'];
     renderWithRouterAndRedux(<App />, { initialEntries, initialState });
-    const valueInput = screen.queryByTestId('value-input');
-    const descriptionInput = screen.queryByTestId('description-input');
+    const valueInput = screen.queryByTestId(VALUE_INPUT);
+    const descriptionInput = screen.queryByTestId(DESCRIPTION_INPUT);
     const addExpenseBtn = screen.queryByRole('button', { name: /adicionar despesa/i });
-    const total = screen.queryByTestId('total-field');
+    const total = screen.queryByTestId(TOTAL_FIELD);
 
     userEvent.type(valueInput, '100');
     expect(valueInput).toHaveValue('100');
@@ -103,5 +106,28 @@ describe('testes da página da carteira', () => {
     // expect(global.fetch).toHaveBeenCalled();
     // expect(global.fetch).toHaveBeenCalledWith('https://economia.awesomeapi.com.br/json/all');
     expect(total.innerHTML).not.toBe('0');
+  });
+});
+
+describe('testes da tabela', () => {
+  it('teste se há os botões editar e excluir após inserir uma despesa', async () => {
+    const initialEntries = ['/carteira'];
+    renderWithRouterAndRedux(<App />, { initialEntries, initialState });
+    const valueInput = screen.getByTestId(VALUE_INPUT);
+    const descriptionInput = screen.getByTestId(DESCRIPTION_INPUT);
+    const addExpenseBtn = screen.queryByRole('button', { name: /adicionar despesa/i });
+    const total = screen.queryByTestId('total-field');
+
+    userEvent.type(valueInput, '50');
+    userEvent.type(descriptionInput, 'teste');
+    userEvent.click(addExpenseBtn);
+
+    const editBtn = await screen.findByRole('button', { name: /editar/i });
+    const deleteBtn = await screen.findByRole('button', { name: /excluir/i });
+    expect(editBtn).toBeInTheDocument();
+    expect(deleteBtn).toBeInTheDocument();
+    expect(total.innerHTML).not.toBe('0.00');
+    userEvent.click(deleteBtn);
+    expect(total.innerHTML).toBe('0.00');
   });
 });
