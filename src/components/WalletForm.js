@@ -2,7 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { paymentMethods, expenseTags } from '../helpers/formOptions';
-import { actionUpdateTotalValue, submitNewExpense } from '../redux/actions';
+import {
+  actionSubmitEditedExpense,
+  actionUpdateTotalValue,
+  submitNewExpense } from '../redux/actions';
 
 class WalletForm extends Component {
   state = {
@@ -22,7 +25,6 @@ class WalletForm extends Component {
   dispatchToSubmitAction = () => {
     const { expenses, dispatch } = this.props;
     const id = expenses.length;
-    console.log(id);
     const {
       value,
       description,
@@ -46,9 +48,46 @@ class WalletForm extends Component {
     }));
   };
 
+  clearState = () => {
+    this.setState({
+      value: '',
+      description: '',
+    });
+  };
+
+  dispatchToEditAction = () => {
+    const { idToEdit, expenses, dispatch } = this.props;
+    const {
+      value: newValue,
+      description: newDesc,
+      currency: newCurrency,
+      method: newMethod,
+      tag: newTag,
+    } = this.state;
+
+    expenses.forEach(({
+      id,
+    }, index) => {
+      if (id === idToEdit) {
+        expenses[index].value = newValue;
+        expenses[index].description = newDesc;
+        expenses[index].currency = newCurrency;
+        expenses[index].method = newMethod;
+        expenses[index].tag = newTag;
+      }
+    });
+    dispatch(actionSubmitEditedExpense(expenses));
+    this.clearState();
+  };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    this.dispatchToSubmitAction();
+    const { editor } = this.props;
+    if (editor) {
+      this.dispatchToEditAction();
+    } else {
+      this.dispatchToSubmitAction();
+    }
   };
 
   calculateTotalValue = (expenses) => {
@@ -63,7 +102,7 @@ class WalletForm extends Component {
 
   render() {
     const { value, description } = this.state;
-    const { currencies, expenses } = this.props;
+    const { currencies, expenses, editor } = this.props;
     this.calculateTotalValue(expenses);
 
     return (
@@ -150,17 +189,27 @@ class WalletForm extends Component {
             )) }
           </select>
         </label>
-        <button>Adicionar despesa</button>
+        <button>
+          {!editor ? 'Adicionar despesa' : 'Editar despesa'}
+        </button>
       </form>
     );
   }
 }
 
 const mapStateToProps = (globalState) => {
-  const { wallet: { currencies, expenses } } = globalState;
+  const { wallet: {
+    currencies,
+    expenses,
+    editor,
+    idToEdit,
+  } } = globalState;
+
   return {
     currencies,
     expenses,
+    editor,
+    idToEdit,
   };
 };
 
@@ -168,6 +217,8 @@ WalletForm.propTypes = {
   currencies: PropTypes.instanceOf(Array).isRequired,
   dispatch: PropTypes.func.isRequired,
   expenses: PropTypes.instanceOf(Array).isRequired,
+  editor: PropTypes.bool.isRequired,
+  idToEdit: PropTypes.number.isRequired,
 };
 
 export default connect(mapStateToProps)(WalletForm);

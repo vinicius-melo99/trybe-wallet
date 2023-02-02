@@ -4,6 +4,8 @@ import {
   GET_CURRENCIES_NAME,
   SUBMIT_NEW_EXPENSE,
   UPDATE_TOTAL_VALUE,
+  TURN_ON_EDIT_MODE,
+  SUBMIT_EDITED_EXPENSE,
 } from '../actions';
 
 const INITIAL_STATE = {
@@ -30,6 +32,20 @@ const wallet = (state = INITIAL_STATE, { type, payload }) => {
     return {
       ...state,
       expenses: payload,
+    };
+  case SUBMIT_EDITED_EXPENSE:
+    console.log(payload);
+    return {
+      ...state,
+      expenses: payload,
+      editor: false,
+      idToEdit: 0,
+    };
+  case TURN_ON_EDIT_MODE:
+    return {
+      ...state,
+      editor: true,
+      idToEdit: payload,
     };
   case UPDATE_TOTAL_VALUE:
     return {

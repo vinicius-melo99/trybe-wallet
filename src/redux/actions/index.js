@@ -5,6 +5,8 @@ export const GET_CURRENCIES_NAME = 'GET_CURRENCIES_NAME';
 export const SUBMIT_NEW_EXPENSE = 'SUBMIT_NEW_EXPENSE';
 export const UPDATE_TOTAL_VALUE = 'UPDATE_TOTAL_VALUE';
 export const DELETE_EXPENSE = 'DELETE_EXPENSE';
+export const TURN_ON_EDIT_MODE = 'TURN_ON_EDIT_MODE';
+export const SUBMIT_EDITED_EXPENSE = 'SUBMIT_EDITED_EXPENSE';
 
 export const actionUserLogin = (email) => ({
   type: USER_LOGIN,
@@ -19,6 +21,16 @@ const actionSubmitNewExpense = (expense) => ({
 export const actionDeleteExpense = (newList) => ({
   type: DELETE_EXPENSE,
   payload: newList,
+});
+
+export const actionTurnOnEditMode = (idToEdit) => ({
+  type: TURN_ON_EDIT_MODE,
+  payload: idToEdit,
+});
+
+export const actionSubmitEditedExpense = (editedList) => ({
+  type: SUBMIT_EDITED_EXPENSE,
+  payload: editedList,
 });
 
 const actionGetCurrenciesInfo = (names) => ({
