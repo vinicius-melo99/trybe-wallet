@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
 import App from '../App';
@@ -44,6 +44,18 @@ describe('Testes do componente Login', () => {
     userEvent.type(passInput, '1234566987as98d7as');
 
     expect(button).toBeDisabled();
+  });
+
+  it('é verificado se ao clicar no botão entrar, o usuário é direcionado para a página da carteira', () => {
+    const { history } = renderWithRouterAndRedux(<App />, { initialState });
+    const button = screen.queryByRole('button', { name: /entrar/i });
+    button.disabled = false;
+
+    userEvent.click(button);
+    const { location: { pathname } } = history;
+    expect(pathname).toBe('/carteira');
+    const title = screen.queryByRole('heading', { level: 2, name: /trybe wallet/i });
+    expect(title).toBeInTheDocument();
   });
 });
 
@@ -129,5 +141,37 @@ describe('testes da tabela', () => {
     expect(total.innerHTML).not.toBe('0.00');
     userEvent.click(deleteBtn);
     expect(total.innerHTML).toBe('0.00');
+  });
+  it('teste se a despesa é adicionada, editada e corretamente', async () => {
+    const initialEntries = ['/carteira'];
+    renderWithRouterAndRedux(<App />, { initialEntries, initialState });
+    const valueInput = screen.getByTestId(VALUE_INPUT);
+    const descriptionInput = screen.getByTestId(DESCRIPTION_INPUT);
+    const addExpenseBtn = screen.queryByRole('button', { name: /adicionar despesa/i });
+
+    userEvent.type(valueInput, '274');
+    userEvent.type(descriptionInput, 'bananas asiáticas ninjas');
+    userEvent.click(addExpenseBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('bananas asiáticas ninjas')).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    const editBtn = await screen.findByRole('button', { name: /editar/i });
+    const deleteBtn = await screen.findByRole('button', { name: /excluir/i });
+
+    userEvent.click(editBtn);
+    const editExpenseBtn = screen.queryByRole('button', { name: /editar despesa/i });
+    expect(editExpenseBtn).toBeInTheDocument();
+    userEvent.type(valueInput, '300');
+    userEvent.type(descriptionInput, 'bananas australianas selvagens');
+    userEvent.click(editExpenseBtn);
+    expect(valueInput).toHaveValue('');
+    expect(descriptionInput).toHaveValue('');
+    const newValue = screen.getByText('bananas australianas selvagens');
+    expect(newValue).toBeInTheDocument();
+
+    userEvent.click(deleteBtn);
+    expect(newValue).not.toBeInTheDocument();
   });
 });

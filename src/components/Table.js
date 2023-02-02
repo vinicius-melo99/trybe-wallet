@@ -22,7 +22,6 @@ class Table extends Component {
 
   render() {
     const { expenses } = this.props;
-    console.log(expenses);
     return (
       <table className="wallet-table" border="1">
         <thead>

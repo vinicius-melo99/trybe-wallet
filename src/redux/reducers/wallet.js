@@ -34,7 +34,6 @@ const wallet = (state = INITIAL_STATE, { type, payload }) => {
       expenses: payload,
     };
   case SUBMIT_EDITED_EXPENSE:
-    console.log(payload);
     return {
       ...state,
       expenses: payload,
