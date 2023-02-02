@@ -1,5 +1,6 @@
 // Esse reducer será responsável por tratar o todas as informações relacionadas as despesas
 import {
+  DELETE_EXPENSE,
   GET_CURRENCIES_NAME,
   SUBMIT_NEW_EXPENSE,
   UPDATE_TOTAL_VALUE,
@@ -24,6 +25,11 @@ const wallet = (state = INITIAL_STATE, { type, payload }) => {
     return {
       ...state,
       expenses: [...state.expenses, payload],
+    };
+  case DELETE_EXPENSE:
+    return {
+      ...state,
+      expenses: payload,
     };
   case UPDATE_TOTAL_VALUE:
     return {
