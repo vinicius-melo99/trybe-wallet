@@ -9,10 +9,10 @@ class Header extends Component {
       <header className="wallet-header">
         <h2>Trybe Wallet</h2>
         <p data-testid="email-field">{ email }</p>
-        <p data-testid="total-field">
+        <span data-testid="total-field">
           { totalValue }
-        </p>
-        <span data-testid="header-currency-field">BRL</span>
+        </span>
+        <span data-testid="header-currency-field"> BRL</span>
       </header>
     );
   }
